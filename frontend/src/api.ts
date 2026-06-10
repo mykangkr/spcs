@@ -1,4 +1,4 @@
-import type { Task } from "./types"
+import type { Task, Priority } from "./types"
 
 const BASE = "http://localhost:8000"                 // wait to parse the JSON body
 
@@ -10,11 +10,11 @@ export async function getTasks(): Promise<Task[]> {
     return res.json()
 }
 
-export async function createTask(text: string): Promise<Task> {
+export async function createTask(text: string, priority: Priority = 'medium'): Promise<Task> {
     const res = await fetch(`${BASE}/tasks`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
+        body: JSON.stringify({ text, priority })
     })
     if (!res.ok) {
         throw new Error(`POST /tasks failed: ${res.status} ${res.statusText}`)
