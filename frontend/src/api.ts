@@ -1,4 +1,4 @@
-import type { Task } from "./App" 
+import type { Task } from "./types"
 
 const BASE = "http://localhost:8000"                 // wait to parse the JSON body
 
@@ -22,7 +22,7 @@ export async function createTask(text: string): Promise<Task> {
     return res.json()
 }
 
-export async function toggleTask(id: string): Promise<void> {
+export async function toggleTask(id: string): Promise<Task> {
     const res = await fetch(`${BASE}/tasks/${id}`, { method: 'PATCH' })
     if (!res.ok) {
         throw new Error(`PATCH /tasks/${id} failed: ${res.status} ${res.statusText}`)
