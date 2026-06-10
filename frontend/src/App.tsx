@@ -1,42 +1,38 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import * as api from './api'
+
+export type Task = {
+  id: string
+  text: string
+  done: boolean
+}
 
 function App() {
-  type Task = {
-    id: string
-    text: string
-    done: boolean
-  }
-
-  // const [tasks, setTasks] = useState<Task[]>([
-  //   { id: '1', text: 'Learn JSX', done: false },
-  //   { id: '2', text: 'Learn useState', done: false },
-  // ])
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    const saved = localStorage.getItem('tasks')
-    return saved ? JSON.parse(saved) : [
-      { id: '1', text: 'Learn JSX', done: false },
-      { id: '2', text: 'Learn useState', done: false },
-    ]
-  })
+  const [tasks, setTasks] = useState<Task[]>([])
   const [text, setText] = useState('')
 
   useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks))
-  }, [tasks])
+    async function load() {
+      const data = await api.getTasks()
+      setTasks(data)
+    }
+    load()
+  }, [])   // [] = run once, on mount
 
-  function addTask() {
-    setTasks([...tasks, { id: crypto.randomUUID(), text, done: false }])  // new array = old items + the new one
+  async function addTask() {
+    const created = await api.createTask(text)
+    setTasks([...tasks, created])
     setText('')                 // clear the input
   } 
 
-  function toggleTask(id: string) {
-    setTasks(tasks.map((t) =>
-      t.id === id ? { ...t, done: !t.done } : t
-    ))
+  async function toggleTask(id: string) {
+    const updated = await api.toggleTask(id)
+    setTasks(tasks.map((t) => (t.id === id ? updated : t)))
   } 
 
-  function deleteTask(id: string) {
+  async function deleteTask(id: string) {
+    await api.deleteTask(id)
     setTasks(tasks.filter((t) => t.id !== id))
   } 
 
