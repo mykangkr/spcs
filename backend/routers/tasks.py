@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from models.task import Task, TaskCreate
-from services import task_service
+from services.backend import service as task_service  # SQLite or Snowflake, per TASK_BACKEND
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
